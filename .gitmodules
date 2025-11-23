@@ -1,0 +1,9 @@
+[submodule "happy"]
+	path = happy
+	url = https://github.com/Han-tiv/happy.git
+[submodule "happy-cli"]
+	path = happy-cli
+	url = https://github.com/Han-tiv/happy-cli.git
+[submodule "happy-server"]
+	path = happy-server
+	url = https://github.com/Han-tiv/happy-server.git
