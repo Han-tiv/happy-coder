@@ -27,13 +27,38 @@ is_running() {
     pgrep -f "$1" > /dev/null 2>&1
 }
 
+# 服务控制封装：优先使用 systemctl，不可用时退回 service
+SYSTEMCTL_BIN="$(command -v systemctl || true)"
+SERVICE_BIN="$(command -v service || true)"
+manage_service() {
+    local service_name=$1
+    local action=$2
+
+    if [ -n "$SYSTEMCTL_BIN" ]; then
+        if [ -n "$SUDO_PASSWORD" ]; then
+            echo "$SUDO_PASSWORD" | sudo -S systemctl "$action" "$service_name" 2>/dev/null
+        else
+            sudo systemctl "$action" "$service_name"
+        fi
+    elif [ -n "$SERVICE_BIN" ]; then
+        if [ -n "$SUDO_PASSWORD" ]; then
+            echo "$SUDO_PASSWORD" | sudo -S service "$service_name" "$action" 2>/dev/null
+        else
+            sudo service "$service_name" "$action"
+        fi
+    else
+        error "无法执行 ${service_name} ${action}：systemctl 与 service 均不可用"
+        exit 1
+    fi
+}
+
 # Start PostgreSQL
 start_postgres() {
     if is_running "postgres.*17/main"; then
         info "PostgreSQL is already running"
     else
         info "Starting PostgreSQL..."
-        service postgresql start
+        manage_service postgresql start
         success "PostgreSQL started"
     fi
 }
@@ -44,7 +69,7 @@ start_redis() {
         info "Redis is already running"
     else
         info "Starting Redis..."
-        service redis-server start
+        manage_service redis-server start
         success "Redis started"
     fi
 }
@@ -113,7 +138,7 @@ stop_all() {
     # Note: Not stopping PostgreSQL and Redis as they're system services
     # and may be used by other applications
     warning "PostgreSQL and Redis are system services and were not stopped"
-    warning "To stop them manually: service postgresql stop && service redis-server stop"
+    warning "To stop them manually: systemctl stop postgresql && systemctl stop redis-server"
 }
 
 # Complete cleanup - stops everything including system services
@@ -143,7 +168,7 @@ cleanup_all() {
     # Stop PostgreSQL
     if is_running "postgres.*17/main"; then
         info "Stopping PostgreSQL..."
-        service postgresql stop || true
+        manage_service postgresql stop || true
         success "PostgreSQL stopped"
     else
         info "PostgreSQL not running"
@@ -152,7 +177,7 @@ cleanup_all() {
     # Stop Redis
     if is_running "redis-server"; then
         info "Stopping Redis..."
-        service redis-server stop || true
+        manage_service redis-server stop || true
         # Also kill any orphaned redis processes that the service didn't catch
         pkill -f "redis-server" 2>/dev/null || true
         success "Redis stopped"
