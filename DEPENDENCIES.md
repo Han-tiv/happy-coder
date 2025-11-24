@@ -39,6 +39,26 @@ This document tracks all dependencies installed during the self-hosted setup pro
 - Includes: Claude Code SDK, Socket.io client, TweetNaCl for encryption, etc.
 - See `/happy-cli/package.json` for full list
 
+## AI CLI Integrations
+
+### Gemini CLI (Optional)
+- **Package**: `@google/gemini-cli`
+- **Installation**: `npm install -g @google/gemini-cli` (user-installed, not bundled)
+- **Integration**: Happy CLI provides `happy gemini` subcommand that wraps official Gemini CLI
+- **Features**:
+  - Automatic session sharing with Happy server
+  - Push notifications to mobile devices
+  - Happy MCP server injection for remote control
+- **Authentication**: Requires Google account or Gemini API key
+- **Usage**: See happy-cli README for details
+- **Note**: Local gemini/ source directory removed as Happy uses official npm package
+
+### Codex CLI (Optional)
+- **Package**: Codex CLI binary
+- **Integration**: Happy CLI provides `happy codex` subcommand
+- **Authentication**: Requires Codex credentials
+- **Usage**: See happy-cli README for details
+
 ## Services (Docker Containers)
 
 ### PostgreSQL
