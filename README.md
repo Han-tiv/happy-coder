@@ -56,6 +56,7 @@ See [WEB_CLIENT_GUIDE.md](WEB_CLIENT_GUIDE.md) for detailed instructions.
 ✅ **happy-server** running on port 3005
 ✅ **happy-cli** with full daemon support
 ✅ **Happy web client** (browser UI on port 8081)
+✅ **AI CLI integrations** (Gemini CLI and Codex CLI via subcommands)
 ✅ **Automated authentication** (no browser/mobile app needed for testing)
 ✅ **Session creation and tracking**
 ✅ **Remote session control from web UI**
@@ -99,6 +100,85 @@ export HAPPY_SERVER_URL=http://localhost:3005
 ./happy-cli/bin/happy.mjs daemon list
 ```
 
+## AI CLI Integration
+
+Happy integrates with multiple AI CLI tools through a unified interface. Each AI CLI runs with automatic session sharing and remote control features.
+
+### Prerequisites
+
+First, verify your environment is compatible:
+
+```bash
+./scripts/check-ai-cli-compatibility.sh
+```
+
+This checks:
+- Node.js version (>= 20 required)
+- AI CLI installations
+- Environment configuration
+- Happy Server connectivity
+
+### Installing AI CLIs
+
+#### Gemini CLI (Optional)
+
+```bash
+# Install globally
+npm install -g @google/gemini-cli
+
+# Or use with npx (no installation)
+npx @google/gemini-cli
+```
+
+**Authentication options:**
+- OAuth login (recommended): Run `gemini` and choose "Login with Google"
+- API key: `export GEMINI_API_KEY="your-key"` (get from https://aistudio.google.com/apikey)
+- Vertex AI: `export GOOGLE_API_KEY="your-key"` and `export GOOGLE_GENAI_USE_VERTEXAI=true`
+
+#### Codex CLI (Optional)
+
+See https://codex.dev for installation and authentication.
+
+### Using AI CLIs with Happy
+
+#### Claude Code (Default)
+
+```bash
+# Start default Claude Code session with Happy
+./happy-cli/bin/happy.mjs
+
+# With specific model
+./happy-cli/bin/happy.mjs -m opus
+```
+
+#### Gemini CLI
+
+```bash
+# Start Gemini CLI with Happy integration
+./happy-cli/bin/happy.mjs gemini
+
+# The integration provides:
+# - Automatic session sharing with Happy Server
+# - Push notifications to mobile devices
+# - Happy MCP server tools injection
+# - Remote control from web/mobile clients
+```
+
+#### Codex CLI
+
+```bash
+# Start Codex with Happy integration
+./happy-cli/bin/happy.mjs codex
+```
+
+### Features
+
+All AI CLI integrations include:
+- ✅ **Session sharing**: View and control sessions from web/mobile
+- ✅ **Push notifications**: Get notified on your devices
+- ✅ **MCP tools**: AI agents can access Happy-specific tools
+- ✅ **Unified experience**: Consistent interface across all AI providers
+
 ## Architecture
 
 ```
@@ -122,7 +202,8 @@ export HAPPY_SERVER_URL=http://localhost:3005
 
 - **[WEB_CLIENT_GUIDE.md](WEB_CLIENT_GUIDE.md)** - Browser UI setup and usage
 - **[E2E_TESTING.md](E2E_TESTING.md)** - Complete e2e testing guide
-- **[DEPENDENCIES.md](DEPENDENCIES.md)** - All installed dependencies
+- **[DEPENDENCIES.md](DEPENDENCIES.md)** - All installed dependencies and AI CLI integrations
+- **[MCP_SERVER_ENHANCEMENT.md](docs/MCP_SERVER_ENHANCEMENT.md)** - Happy MCP Server enhancement plan
 - **[CLAUDE.md](CLAUDE.md)** - Project instructions for Claude
 
 ## Key Scripts
@@ -148,6 +229,19 @@ No browser or mobile app needed!
 
 ### e2e-demo.sh
 Complete end-to-end demonstration script that shows the full flow working.
+
+### check-ai-cli-compatibility.sh
+Compatibility checker for AI CLI integrations. Verifies:
+- Node.js and npm versions
+- Gemini CLI and Codex CLI installations
+- Environment configuration
+- Happy Server connectivity
+- MCP server tools registration
+
+Usage:
+```bash
+./scripts/check-ai-cli-compatibility.sh
+```
 
 ## Service URLs
 
